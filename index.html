@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Preview AI-proposed file edits, approve changes individually, and export an approved Git patch.">
+  <meta name="theme-color" content="#10131c">
+  <title>Agent Action Review</title>
+  <link rel="stylesheet" href="./src/styles.css">
+  <script type="module" src="./src/app.js"></script>
+</head>
+<body>
+  <header class="app-bar">
+    <div class="app-bar-inner">
+      <div class="brand"><span class="brand-mark" aria-hidden="true"></span>Agent Action Review</div>
+      <div class="actions">
+        <button id="open-workspace" class="quiet" type="button">Workspace</button>
+        <button id="open-plan" type="button">Import plan</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="shell">
+    <section class="page-header" aria-labelledby="page-title">
+      <div>
+        <h1 id="page-title">Review proposed edits</h1>
+        <p>Approve individual file changes and export a Git patch.</p>
+      </div>
+      <div class="actions">
+        <button id="download-patch" type="button" disabled>Download patch</button>
+        <button id="apply-edits" class="primary" type="button" disabled>Apply approved</button>
+      </div>
+    </section>
+
+    <p id="feedback" class="feedback" role="status" hidden></p>
+
+    <div class="workbench">
+      <aside class="queue panel" aria-label="Plan and writable paths">
+        <header class="queue-header">
+          <h2>Plan</h2>
+          <p id="plan-title">Clarify the quick start</p>
+          <p id="plan-summary" class="summary"></p>
+        </header>
+        <ul id="edit-list" class="edit-list" aria-label="Proposed files"></ul>
+        <section class="scope" aria-labelledby="scope-title">
+          <h2 id="scope-title">Writable paths</h2>
+          <ul id="scope-list" class="scope-list"></ul>
+        </section>
+      </aside>
+
+      <section class="review panel" aria-label="File preview">
+        <div id="empty-review" class="empty" hidden>
+          <h2>Import a plan to start reviewing</h2>
+          <p>Your workspace is ready for proposed file edits.</p>
+        </div>
+        <div id="active-review">
+          <header class="file-header">
+            <div>
+              <p id="file-status" class="badge"></p>
+              <h2 id="file-name" class="file-name"></h2>
+              <p id="diff-summary" class="summary"></p>
+            </div>
+            <div class="actions file-actions">
+              <button id="edit-copy" class="quiet" type="button">Edit working copy</button>
+              <button id="refresh-preview" type="button" hidden>Refresh preview</button>
+              <button id="approve-edit" type="button">Approve edit</button>
+            </div>
+          </header>
+          <p id="file-notice" class="notice" hidden></p>
+          <div id="diff-scroll" class="diff-scroll" tabindex="0" aria-label="Scrollable file diff">
+            <table class="diff" aria-label="File differences">
+              <thead>
+                <tr><th scope="col">Old</th><th scope="col">New</th><th scope="col" colspan="2">Content</th></tr>
+              </thead>
+              <tbody id="diff-lines"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <dialog id="workspace-dialog" aria-labelledby="workspace-title">
+    <form id="workspace-form">
+      <h2 id="workspace-title">Workspace</h2>
+      <p>Load text files and their explicit writable paths. Loading a workspace clears the current plan.</p>
+      <label for="workspace-json">Workspace JSON</label>
+      <textarea id="workspace-json" rows="11" spellcheck="false" required></textarea>
+      <p id="workspace-error" class="error" role="alert" hidden></p>
+      <div class="dialog-actions">
+        <button id="reset-demo" class="quiet" type="button">Reset demo</button>
+        <div class="actions">
+          <button class="quiet" data-close type="button">Cancel</button>
+          <button class="primary" type="submit">Load workspace</button>
+        </div>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="plan-dialog" aria-labelledby="import-title">
+    <form id="plan-form">
+      <h2 id="import-title">Import an edit plan</h2>
+      <p>Paste a JSON plan with a path and replacement text for each proposed edit.</p>
+      <label for="plan-json">Edit plan JSON</label>
+      <textarea id="plan-json" rows="11" spellcheck="false" required></textarea>
+      <p id="plan-error" class="error" role="alert" hidden></p>
+      <div class="dialog-actions end">
+        <button class="quiet" data-close type="button">Cancel</button>
+        <button class="primary" type="submit">Load plan</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="copy-dialog" aria-labelledby="copy-title">
+    <form id="copy-form">
+      <h2 id="copy-title">Edit the working copy</h2>
+      <p>Saving changed text requires a fresh preview before an approved edit can be applied.</p>
+      <label id="copy-label" for="copy-content">File contents</label>
+      <textarea id="copy-content" rows="11" spellcheck="false"></textarea>
+      <p id="copy-error" class="error" role="alert" hidden></p>
+      <div class="dialog-actions end">
+        <button class="quiet" data-close type="button">Cancel</button>
+        <button class="primary" type="submit">Save working copy</button>
+      </div>
+    </form>
+  </dialog>
+</body>
+</html>
